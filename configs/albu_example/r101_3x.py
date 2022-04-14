@@ -44,7 +44,7 @@ model = dict(
             type='SingleRoIExtractor',
             roi_layer=dict(type='RoIAlign', output_size=7, sampling_ratio=0),
             out_channels=256,
-            gc_context=True,
+#             gc_context=True,
             featmap_strides=[4, 8, 16, 32]),
         bbox_head=[
             dict(
