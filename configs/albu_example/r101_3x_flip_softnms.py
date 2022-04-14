@@ -2,7 +2,7 @@ num_classes = 50
 # model settings
 model = dict(
     type='CascadeRCNN',
-    pretrained='pretrained/resnet101-5d3b4d8f.pth',
+    pretrained='checkpoints/resnet101-5d3b4d8f.pth',
     backbone=dict(
         type='ResNet',
         depth=101,
