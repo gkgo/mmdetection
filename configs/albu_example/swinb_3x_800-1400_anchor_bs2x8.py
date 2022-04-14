@@ -2,7 +2,7 @@ num_classes = 50
 # model settings
 model = dict(
     type='CascadeRCNN',
-    pretrained='/home/user/data/torch/checkpoints/swin_base_patch4_window7_224.pth',
+    pretrained='checkpoints/swin_base_patch4_window7_224.pth',
     backbone=dict(
         type='SwinTransformer',
         embed_dim=128,
