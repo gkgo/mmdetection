@@ -8,9 +8,35 @@ def wider_face_classes():
 
 def voc_classes():
     return [
-        'aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat',
-        'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person',
-        'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor'
+               '0',
+        '6',
+        '7',
+        '8',
+        '9',
+        '10',
+        '25',
+        '41',
+        '105',
+        '110',
+        '115',
+        '148',
+        '156',
+        '222',
+        '228',
+        '235',
+        '256',
+        '280',
+        '310',
+        '387',
+        '392',
+        '394',
+        '398',
+        '401',
+        '402',
+        '430',
+        '480',
+        '485',
+        '673'
     ]
 
 
