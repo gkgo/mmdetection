@@ -222,28 +222,28 @@ test_pipeline = [
 ]
 datasetA = dict(
     type=dataset_type,
-    ann_file='data/logdet-mini/instances_train2017.json',
-    img_prefix='data/logdet-mini/images',
+    ann_file='data/logdet-mini/train/instances_train2017.json',
+    img_prefix='data/logdet-mini/train/images',
     pipeline=train_pipeline)
 data = dict(
     samples_per_gpu=4,
     workers_per_gpu=4,
     train=dict(
         type='RepeatDataset',
-        times=1,
+        times=3,
         dataset=dict(
             type='ConcatDataset',
             datasets=[datasetA]
         )),
     val=dict(
         type=dataset_type,
-        ann_file='data/logdet-mini/instances_val2017.json',
-        img_prefix='data/logdet-mini/images',
+        ann_file='data/logdet-mini/val/instances_val2017.json',
+        img_prefix='data/logdet-mini/val/images',
         pipeline=test_pipeline),
     test=dict(
         type=dataset_type,
-        ann_file='data/logdet-mini/instances_val2017.json',
-        img_prefix='data/logdet-mini/images',
+        ann_file='data/logdet-mini/val/instances_val2017.json',
+        img_prefix='data/logdet-mini/val/images',
         pipeline=test_pipeline))
 evaluation = dict(interval=1, metric='bbox', start=7)
 optimizer = dict(type='SGD', lr=0.00125*16, momentum=0.9, weight_decay=0.0001)
