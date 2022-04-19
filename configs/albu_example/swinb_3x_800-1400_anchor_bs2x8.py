@@ -229,8 +229,8 @@ test_pipeline = [
 ]
 datasetA = dict(
     type=dataset_type,
-    ann_file='data/logdet-mini/instances_train2017.json',
-    img_prefix='data/logdet-mini/images',
+       ann_file='data/logdet-mini/train/instances_train2017.json',
+        img_prefix='data/logdet-mini/train/images',
     pipeline=train_pipeline)
 data = dict(
     samples_per_gpu=4,
@@ -244,8 +244,8 @@ data = dict(
         )),
     val=dict(
         type=dataset_type,
-        ann_file='data/logdet-mini/instances_val2017.json',
-        img_prefix='data/logdet-mini/images',
+       ann_file='data/logdet-mini/train/instances_train2017.json',
+        img_prefix='data/logdet-mini/train/images',
         pipeline=test_pipeline),
     test=dict(
         type=dataset_type,
