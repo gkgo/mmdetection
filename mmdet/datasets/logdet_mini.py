@@ -19,7 +19,13 @@ from .custom import CustomDataset
 @DATASETS.register_module()
 class LogDetMini(CustomDataset):
 
-    CLASSES = ('FESTO', 'starbucks', 'castrol', 'hellokitty', 'SANDVIK', 'alexandermcqueen', 'balabala', 'THINKINGPUTTY', 'CCTV', 'puma', 'piaget', 'givenchy', 'naturerepublic', 'pandora', 'chowtaiseng', 'kans', 'joyong', 'apple', 'lenovo', 'sergiorossi', 'joeone', 'dove', 'pigeon', 'keds', 'simon', 'burberry', 'wechat', 'thermos', 'asics', 'doraemon', 'brioni', 'rejoice', 'charles_keith', 'Jmsolution', 'musenlin', 'GOON', 'gentlemonster', 'hotwind', 'UnderArmour', 'alibaba', 'tesla', 'gloria', 'ThomasFriends', 'fendi', 'camel', 'Thrasher', 'yuantong', 'chromehearts', 'pepsicola', 'playboy')
+    CLASSES = ('冰墩墩', 'Sanyo/三洋', 'Eifini/伊芙丽', 'PSALTER/诗篇', 'Beaster', 'ON/昂跑', 'BYREDO/柏芮朵', 'Ubras', 'Eternelle',
+     'PERFECT DIARY/完美日记', '花西子', 'Clarins/娇韵诗', "L'occitane/欧舒丹", 'Versace/范思哲', 'Mizuno/美津浓', 'Lining/李宁',
+     'DOUBLE STAR/双星', 'YONEX/尤尼克斯', 'Tory Burch/汤丽柏琦', 'Gucci/古驰', 'Louis Vuitton/路易威登', 'CARTELO/卡帝乐鳄鱼', 'JORDAN',
+     'KENZO', 'UNDEFEATED', 'BOY LONDON', 'TREYO/雀友', 'carhartt', '洁柔', 'Blancpain/宝珀', 'GXG', '乐町', 'Diadora/迪亚多纳',
+     'TUCANO/啄木鸟', 'Loewe', 'Granite Gear', 'DESCENTE/迪桑特', 'OSPREY', 'Swatch/斯沃琪', 'erke/鸿星尔克', 'Massimo Dutti',
+     'PINKO', 'PALLADIUM', 'origins/悦木之源', 'Trendiano', '音儿', 'Monster Guardians', '敷尔佳', 'IPSA/茵芙莎', 'Schwarzkopf/施华蔻')
+
 
 
     def load_annotations(self, ann_file):
