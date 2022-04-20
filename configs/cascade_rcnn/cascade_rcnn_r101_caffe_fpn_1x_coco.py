@@ -4,4 +4,4 @@ model = dict(
         depth=101,
         init_cfg=dict(
             type='Pretrained',
-            checkpoint='open-mmlab://detectron2/resnet101_caffe')))
+            checkpoint='checkpoints/cascade_rcnn_r50_fpn_dconv_c3-c5_1x_coco_20200130-2f1fca44.pth')))
