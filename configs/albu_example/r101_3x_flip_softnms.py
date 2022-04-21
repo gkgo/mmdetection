@@ -6,25 +6,25 @@ albu_train_transforms = [ dict(
         scale_limit=0.0,
         rotate_limit=180,
         interpolation=1,
-        p=0.3),
-dict(
-    type='RandomBrightnessContrast',
-    brightness_limit=[0.1, 0.3],
-    contrast_limit=[0.1, 0.3],
-    p=0.2),
-dict(
-    type='RandomBrightnessContrast',
-    brightness_limit=[0.1, 0.3],
-    contrast_limit=[0.1, 0.3],
-    p=0.2),
-dict(type='ChannelShuffle', p=0.1),
-dict(
-    type='OneOf',
-    transforms=[
-        dict(type='Blur', blur_limit=3, p=1.0),
-        dict(type='MedianBlur', blur_limit=3, p=1.0)
-    ],
-    p=0.1)]
+        p=0.5)]
+# dict(
+#     type='RandomBrightnessContrast',
+#     brightness_limit=[0.1, 0.3],
+#     contrast_limit=[0.1, 0.3],
+#     p=0.2),
+# dict(
+#     type='RandomBrightnessContrast',
+#     brightness_limit=[0.1, 0.3],
+#     contrast_limit=[0.1, 0.3],
+#     p=0.2),
+# dict(type='ChannelShuffle', p=0.1),
+# dict(
+#     type='OneOf',
+#     transforms=[
+#         dict(type='Blur', blur_limit=3, p=1.0),
+#         dict(type='MedianBlur', blur_limit=3, p=1.0)
+#     ],
+#     p=0.1)]
 model = dict(
     type='CascadeRCNN',
     pretrained='checkpoints/resnet101-5d3b4d8f.pth',
@@ -240,7 +240,7 @@ train_pipeline = [
         type='Resize',
         # img_scale=(1333, 800),
         img_scale=[(800, 800),(1200,1200),(1600,1600)],
-        keep_ratio=True),
+        keep_ratio=False),
     dict(type='RandomFlip', flip_ratio=0.5),
     dict(
         type='Normalize',
@@ -259,7 +259,7 @@ test_pipeline = [
         img_scale=[(800, 800),(1200,1200),(1600,1600)],
         flip=True,
         transforms=[
-            dict(type='Resize', keep_ratio=True),
+            dict(type='Resize', keep_ratio=False),
             dict(type='RandomFlip'),
             dict(
                 type='Normalize',
@@ -306,7 +306,7 @@ lr_config = dict(
     warmup_ratio=0.001,
     step=[8, 11])
 runner = dict(type='EpochBasedRunner', max_epochs=16)
-checkpoint_config = dict(interval=16)
+checkpoint_config = dict(interval=12)
 log_config = dict(
     interval=10,
     hooks=[
