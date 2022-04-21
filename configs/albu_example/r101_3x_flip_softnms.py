@@ -1,5 +1,30 @@
 num_classes = 50
 # model settings
+albu_train_transforms = [ dict(
+        type='ShiftScaleRotate',
+        shift_limit=0.0625,
+        scale_limit=0.0,
+        rotate_limit=180,
+        interpolation=1,
+        p=0.3),
+dict(
+    type='RandomBrightnessContrast',
+    brightness_limit=[0.1, 0.3],
+    contrast_limit=[0.1, 0.3],
+    p=0.2),
+dict(
+    type='RandomBrightnessContrast',
+    brightness_limit=[0.1, 0.3],
+    contrast_limit=[0.1, 0.3],
+    p=0.2),
+dict(type='ChannelShuffle', p=0.1),
+dict(
+    type='OneOf',
+    transforms=[
+        dict(type='Blur', blur_limit=3, p=1.0),
+        dict(type='MedianBlur', blur_limit=3, p=1.0)
+    ],
+    p=0.1)]
 model = dict(
     type='CascadeRCNN',
     pretrained='checkpoints/resnet101-5d3b4d8f.pth',
@@ -25,8 +50,9 @@ model = dict(
         anchor_generator=dict(
             type='AnchorGenerator',
             scales=[8],
-            #  ratios=[0.25, 0.5, 1.0, 2.0, 4.0],
-            ratios=[0.5, 1.0, 2.0],
+             # ratios=[0.25, 0.5, 1.0, 2.0, 4.0],
+            # ratios=[0.5, 1.0, 2.0],
+            ratios=[0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10],
             strides=[4, 8, 16, 32, 64]),
         bbox_coder=dict(
             type='DeltaXYWHBBoxCoder',
@@ -34,8 +60,10 @@ model = dict(
             target_stds=[1.0, 1.0, 1.0, 1.0]),
         loss_cls=dict(
             type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
-        loss_bbox=dict(
-            type='SmoothL1Loss', beta=0.1111111111111111, loss_weight=1.0)),
+        # loss_bbox=dict(
+        #     type='SmoothL1Loss', beta=0.1111111111111111, loss_weight=1.0)),
+        reg_decoded_bbox=True,  # 使用GIoUI时注意添加
+        loss_bbox=dict(type='GIoULoss', loss_weight=5.0)),
     roi_head=dict(
         type='CascadeRoIHead',
         num_stages=3,
@@ -44,7 +72,7 @@ model = dict(
             type='SingleRoIExtractor',
             roi_layer=dict(type='RoIAlign', output_size=7, sampling_ratio=0),
             out_channels=256,
-#             gc_context=True,
+            # gc_context=True,
             featmap_strides=[4, 8, 16, 32]),
         bbox_head=[
             dict(
@@ -62,8 +90,10 @@ model = dict(
                     type='CrossEntropyLoss',
                     use_sigmoid=False,
                     loss_weight=1.0),
-                loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
-                               loss_weight=1.0)),
+                # loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
+                #                loss_weight=1.0)),
+                reg_decoded_bbox=True,  # 使用GIoUI时注意添加
+                loss_bbox=dict(type='GIoULoss', loss_weight=5.0)),
             dict(
                 type='Shared2FCBBoxHead',
                 in_channels=256,
@@ -79,8 +109,10 @@ model = dict(
                     type='CrossEntropyLoss',
                     use_sigmoid=False,
                     loss_weight=1.0),
-                loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
-                               loss_weight=1.0)),
+                # loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
+                #                loss_weight=1.0)),
+                reg_decoded_bbox=True,  # 使用GIoUI时注意添加
+                loss_bbox=dict(type='GIoULoss', loss_weight=5.0)),
             dict(
                 type='Shared2FCBBoxHead',
                 in_channels=256,
@@ -96,7 +128,9 @@ model = dict(
                     type='CrossEntropyLoss',
                     use_sigmoid=False,
                     loss_weight=1.0),
-                loss_bbox=dict(type='SmoothL1Loss', beta=1.0, loss_weight=1.0))
+                # loss_bbox=dict(type='SmoothL1Loss', beta=1.0, loss_weight=1.0))
+                reg_decoded_bbox=True,  # 使用GIoUI时注意添加
+                loss_bbox=dict(type='GIoULoss', loss_weight=5.0)),
         ]),
     train_cfg=dict(
         rpn=dict(
@@ -108,7 +142,7 @@ model = dict(
                 match_low_quality=True,
                 ignore_iof_thr=-1),
             sampler=dict(
-                type='RandomSampler',
+                type='OHEMSampler',
                 num=256,
                 pos_fraction=0.5,
                 neg_pos_ub=-1,
@@ -131,7 +165,7 @@ model = dict(
                     match_low_quality=False,
                     ignore_iof_thr=-1),
                 sampler=dict(
-                    type='RandomSampler',
+                    type='OHEMSampler',
                     num=512,
                     pos_fraction=0.25,
                     neg_pos_ub=-1,
@@ -147,7 +181,7 @@ model = dict(
                     match_low_quality=False,
                     ignore_iof_thr=-1),
                 sampler=dict(
-                    type='RandomSampler',
+                    type='OHEMSampler',
                     num=512,
                     pos_fraction=0.25,
                     neg_pos_ub=-1,
@@ -163,7 +197,7 @@ model = dict(
                     match_low_quality=False,
                     ignore_iof_thr=-1),
                 sampler=dict(
-                    type='RandomSampler',
+                    type='OHEMSampler',
                     num=512,
                     pos_fraction=0.25,
                     neg_pos_ub=-1,
@@ -188,9 +222,24 @@ dataset_type = 'LogDetMini'
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
+    dict(type='Albu',
+         transforms=albu_train_transforms,
+         bbox_params=dict(
+             type='BboxParams',
+             format='pascal_voc',
+             label_fields=['gt_labels'],
+             min_visibility=0.0,
+             filter_lost_elements=True),
+         keymap={
+             'img': 'image',
+             'gt_bboxes': 'bboxes'
+         },
+         update_pad_shape=False,
+         skip_img_without_anno=True),
     dict(
         type='Resize',
-        img_scale=(1333, 800),
+        # img_scale=(1333, 800),
+        img_scale=[(800, 800),(1200,1200),(1600,1600)],
         keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
     dict(
@@ -206,7 +255,8 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(1333, 800),
+        # img_scale=(1333, 800),
+        img_scale=[(800, 800),(1200,1200),(1600,1600)],
         flip=True,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -227,8 +277,8 @@ datasetA = dict(
     img_prefix='data/logdet-mini/train/images',
     pipeline=train_pipeline)
 data = dict(
-    samples_per_gpu=4,
-    workers_per_gpu=4,
+    samples_per_gpu=1,
+    workers_per_gpu=1,
     train=dict(
         type='RepeatDataset',
         times=3,
@@ -238,8 +288,8 @@ data = dict(
         )),
     val=dict(
         type=dataset_type,
-    ann_file='data/logdet-mini/train/instances_train2017.json',
-    img_prefix='data/logdet-mini/train/images',
+        ann_file='data/logdet-mini/val/instances_val2017.json',
+        img_prefix='data/logdet-mini/val/images',
         pipeline=test_pipeline),
     test=dict(
         type=dataset_type,
@@ -255,7 +305,7 @@ lr_config = dict(
     warmup_iters=250,
     warmup_ratio=0.001,
     step=[8, 11])
-runner = dict(type='EpochBasedRunner', max_epochs=6)
+runner = dict(type='EpochBasedRunner', max_epochs=12)
 checkpoint_config = dict(interval=12)
 log_config = dict(
     interval=10,
@@ -269,3 +319,4 @@ load_from = None
 resume_from = None
 workflow = [('train', 1)]
 fp16 = dict(loss_scale=512.)
+
