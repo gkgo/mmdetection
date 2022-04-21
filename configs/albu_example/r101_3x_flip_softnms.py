@@ -139,7 +139,7 @@ model = dict(
                 pos_iou_thr=0.7,
                 neg_iou_thr=0.3,
                 min_pos_iou=0.3,
-                match_low_quality=True,
+                match_low_quality=False,
                 ignore_iof_thr=-1),
             sampler=dict(
                 type='OHEMSampler',
@@ -240,7 +240,7 @@ train_pipeline = [
         type='Resize',
         # img_scale=(1333, 800),
         img_scale=[(800, 800),(1200,1200),(1600,1600)],
-        keep_ratio=False),
+        keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
     dict(
         type='Normalize',
@@ -259,7 +259,7 @@ test_pipeline = [
         img_scale=[(800, 800),(1200,1200),(1600,1600)],
         flip=True,
         transforms=[
-            dict(type='Resize', keep_ratio=False),
+            dict(type='Resize', keep_ratio=True),
             dict(type='RandomFlip'),
             dict(
                 type='Normalize',
