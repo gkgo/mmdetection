@@ -362,6 +362,5 @@ albu_train_transforms = [
         interpolation=1,
         p=0.3)
 ]
-work_dir = './work_dirs/cascade_rcnn_r101_caffe_fpn_1x_coco'
 auto_resume = False
 gpu_ids = [0]
