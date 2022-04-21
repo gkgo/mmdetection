@@ -277,8 +277,8 @@ datasetA = dict(
     img_prefix='data/logdet-mini/train/images',
     pipeline=train_pipeline)
 data = dict(
-    samples_per_gpu=1,
-    workers_per_gpu=1,
+    samples_per_gpu=8,
+    workers_per_gpu=2,
     train=dict(
         type='RepeatDataset',
         times=3,
@@ -305,7 +305,7 @@ lr_config = dict(
     warmup_iters=250,
     warmup_ratio=0.001,
     step=[8, 11])
-runner = dict(type='EpochBasedRunner', max_epochs=16)
+runner = dict(type='EpochBasedRunner', max_epochs=12)
 checkpoint_config = dict(interval=12)
 log_config = dict(
     interval=10,
