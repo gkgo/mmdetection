@@ -12,7 +12,7 @@ model = dict(
         init_cfg=dict(
             type='Pretrained',
             checkpoint=
-            'checkpoints/cascade_rcnn_r50_fpn_dconv_c3-c5_1x_coco_20200130-2f1fca44.pth'
+            'checkpoints/cascade_rcnn_r101_fpn_1x_coco_20200317-0b6a2fbf.pth'
         )),
     neck=dict(
         type='FPN',
@@ -188,8 +188,8 @@ model = dict(
             score_thr=0.05,
             nms=dict(type='nms', iou_threshold=0.5),
             max_per_img=100)))
-dataset_type = 'VOCDataset'
-data_root = 'data/VOCdevkit/'
+dataset_type = 'CocoDataset'
+data_root = 'data/coco/'
 img_norm_cfg = dict(
     mean=[103.53, 116.28, 123.675], std=[1.0, 1.0, 1.0], to_rgb=False)
 train_pipeline = [
@@ -271,19 +271,19 @@ data = dict(
         type='RepeatDataset',
         times=3,
         dataset=dict(
-            type='VOCDataset',
-            ann_file=['data/VOCdevkit/VOC2007/ImageSets/Main/trainval.txt'],
-            img_prefix=['data/VOCdevkit/VOC2007/'],
+            type='CocoDataset',
+            ann_file='data/coco/annotations/instances_train2017.json',
+            img_prefix='data/coco/train2017/',
             pipeline=train_pipeline)),
     val=dict(
-        type='VOCDataset',
-        ann_file='data/VOCdevkit/VOC2007/ImageSets/Main/test.txt',
-        img_prefix='data/VOCdevkit/VOC2007/',
+        type='CocoDataset',
+        ann_file='data/coco/annotations/instances_train2017.json',
+        img_prefix='data/coco/train2017/',
         pipeline=test_pipeline),
     test=dict(
-        type='VOCDataset',
-        ann_file='data/VOCdevkit/VOC2007/ImageSets/Main/test.txt',
-        img_prefix='data/VOCdevkit/VOC2007/',
+        type='CocoDataset',
+        ann_file='data/coco/annotations/instances_train2017.json',
+        img_prefix='data/coco/train2017/',
         pipeline=test_pipeline),
         )
 evaluation = dict(interval=1, metric='mAP')
