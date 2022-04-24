@@ -5,25 +5,25 @@ albu_train_transforms = [ dict(
         scale_limit=0.0,
         rotate_limit=180,
         interpolation=1,
-        p=0.3),
-dict(
-    type='RandomBrightnessContrast',
-    brightness_limit=[0.1, 0.3],
-    contrast_limit=[0.1, 0.3],
-    p=0.2),
-dict(
-    type='RandomBrightnessContrast',
-    brightness_limit=[0.1, 0.3],
-    contrast_limit=[0.1, 0.3],
-    p=0.2),
-dict(type='ChannelShuffle', p=0.1),
-dict(
-    type='OneOf',
-    transforms=[
-        dict(type='Blur', blur_limit=3, p=1.0),
-        dict(type='MedianBlur', blur_limit=3, p=1.0)
-    ],
-    p=0.1)]
+        p=0.5)]
+# dict(
+#     type='RandomBrightnessContrast',
+#     brightness_limit=[0.1, 0.3],
+#     contrast_limit=[0.1, 0.3],
+#     p=0.2),
+# dict(
+#     type='RandomBrightnessContrast',
+#     brightness_limit=[0.1, 0.3],
+#     contrast_limit=[0.1, 0.3],
+#     p=0.2),
+# dict(type='ChannelShuffle', p=0.1),
+# dict(
+#     type='OneOf',
+#     transforms=[
+#         dict(type='Blur', blur_limit=3, p=1.0),
+#         dict(type='MedianBlur', blur_limit=3, p=1.0)
+#     ],
+#     p=0.1)]
 model = dict(
     backbone=dict(
         norm_cfg=dict(requires_grad=False),
@@ -79,3 +79,4 @@ data = dict(
     train=dict(pipeline=train_pipeline),
     val=dict(pipeline=test_pipeline),
     test=dict(pipeline=test_pipeline))
+# configs/cascade_rcnn/cascade_rcnn_r50_caffe_fpn_1x_coco.py
