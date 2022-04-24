@@ -12,7 +12,7 @@ model = dict(
         init_cfg=dict(
             type='Pretrained',
             checkpoint=
-            'checkpoints/cascade_rcnn_r50_fpn_dconv_c3-c5_1x_coco_20200130-2f1fca44.pth'
+            'checkpoints/cascade_rcnn_r101_fpn_1x_coco_20200317-0b6a2fbf.pth'
         )),
     neck=dict(
         type='FPN',
