@@ -12,8 +12,8 @@ model = dict(
         init_cfg=dict(
             type='Pretrained',
             checkpoint=
-            'checkpoints/cascade_rcnn_r101_fpn_1x_coco_20200317-0b6a2fbf.pth'
-        )),
+            'checkpoints/cascade_rcnn_r101_fpn_1x_coco_20200317-0b6a2fbf.pth')
+    ),
     neck=dict(
         type='FPN',
         in_channels=[256, 512, 1024, 2048],
@@ -34,9 +34,7 @@ model = dict(
             target_stds=[1.0, 1.0, 1.0, 1.0]),
         loss_cls=dict(
             type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
-        # loss_bbox=dict(
-        #     type='SmoothL1Loss', beta=0.1111111111111111, loss_weight=1.0)),
-        reg_decoded_bbox=True,  # 使用GIoUI时注意添加
+        reg_decoded_bbox=True,
         loss_bbox=dict(type='GIoULoss', loss_weight=5.0)),
     roi_head=dict(
         type='CascadeRoIHead',
@@ -63,9 +61,7 @@ model = dict(
                     type='CrossEntropyLoss',
                     use_sigmoid=False,
                     loss_weight=1.0),
-                # loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
-                #                loss_weight=1.0)),
-                reg_decoded_bbox=True,  # 使用GIoUI时注意添加
+                reg_decoded_bbox=True,
                 loss_bbox=dict(type='GIoULoss', loss_weight=5.0)),
             dict(
                 type='Shared2FCBBoxHead',
@@ -82,9 +78,7 @@ model = dict(
                     type='CrossEntropyLoss',
                     use_sigmoid=False,
                     loss_weight=1.0),
-                # loss_bbox=dict(type='SmoothL1Loss', beta=1.0,
-                #                loss_weight=1.0)),
-                reg_decoded_bbox=True,  # 使用GIoUI时注意添加
+                reg_decoded_bbox=True,
                 loss_bbox=dict(type='GIoULoss', loss_weight=5.0)),
             dict(
                 type='Shared2FCBBoxHead',
@@ -101,9 +95,8 @@ model = dict(
                     type='CrossEntropyLoss',
                     use_sigmoid=False,
                     loss_weight=1.0),
-                # loss_bbox=dict(type='SmoothL1Loss', beta=1.0, loss_weight=1.0))
-                reg_decoded_bbox=True,  # 使用GIoUI时注意添加
-                loss_bbox=dict(type='GIoULoss', loss_weight=5.0)),
+                reg_decoded_bbox=True,
+                loss_bbox=dict(type='GIoULoss', loss_weight=5.0))
         ]),
     train_cfg=dict(
         rpn=dict(
@@ -195,46 +188,8 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(
-        type='Albu',
-        transforms=[
-            dict(
-                type='ShiftScaleRotate',
-                shift_limit=0.0625,
-                scale_limit=0.0,
-                rotate_limit=180,
-                interpolation=1,
-                p=0.5),
-            # dict(
-            #     type='RandomBrightnessContrast',
-            #     brightness_limit=[0.1, 0.3],
-            #     contrast_limit=[0.1, 0.3],
-            #     p=0.2),
-            # dict(
-            #     type='RandomBrightnessContrast',
-            #     brightness_limit=[0.1, 0.3],
-            #     contrast_limit=[0.1, 0.3],
-            #     p=0.2),
-            # dict(type='ChannelShuffle', p=0.1),
-            # dict(
-            #     type='OneOf',
-            #     transforms=[
-            #         dict(type='Blur', blur_limit=3, p=1.0),
-            #         dict(type='MedianBlur', blur_limit=3, p=1.0)
-            #     ],
-            #     p=0.1)
-        ],
-        bbox_params=dict(
-            type='BboxParams',
-            format='pascal_voc',
-            label_fields=['gt_labels'],
-            min_visibility=0.0,
-            filter_lost_elements=True),
-        keymap=dict(img='image', gt_bboxes='bboxes'),
-        update_pad_shape=False,
-        skip_img_without_anno=True),
-    dict(type='GtBoxBasedCrop', crop_size=(1600, 1064)),
-    dict(type='Resize', img_scale=[(1600, 1064), (800, 532)], keep_ratio=True),
+    dict(type='GtBoxBasedCrop', crop_size=(640, 416)),
+    dict(type='Resize', img_scale=[(1280, 832), (640, 416)], keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
     dict(
         type='Normalize',
@@ -249,7 +204,7 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=[(1600, 1064), (800, 532)],
+        img_scale=[(1280, 832), (640, 416)],
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -274,18 +229,70 @@ data = dict(
             type='CocoDataset',
             ann_file='data/coco/annotations/instances_train2017.json',
             img_prefix='data/coco/train2017/',
-            pipeline=train_pipeline)),
+            pipeline=[
+                dict(type='LoadImageFromFile'),
+                dict(type='LoadAnnotations', with_bbox=True),
+                dict(type='GtBoxBasedCrop', crop_size=(640, 416)),
+                dict(
+                    type='Resize',
+                    img_scale=[(1280, 832), (640, 416)],
+                    keep_ratio=True),
+                dict(type='RandomFlip', flip_ratio=0.5),
+                dict(
+                    type='Normalize',
+                    mean=[103.53, 116.28, 123.675],
+                    std=[1.0, 1.0, 1.0],
+                    to_rgb=False),
+                dict(type='Pad', size_divisor=32),
+                dict(type='DefaultFormatBundle'),
+                dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+            ])),
     val=dict(
         type='CocoDataset',
         ann_file='data/coco/annotations/instances_train2017.json',
         img_prefix='data/coco/train2017/',
-        pipeline=test_pipeline),
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=[(1280, 832), (640, 416)],
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[103.53, 116.28, 123.675],
+                        std=[1.0, 1.0, 1.0],
+                        to_rgb=False),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]),
     test=dict(
         type='CocoDataset',
         ann_file='data/coco/annotations/instances_train2017.json',
         img_prefix='data/coco/train2017/',
-        pipeline=test_pipeline),
-        )
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=[(1280, 832), (640, 416)],
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[103.53, 116.28, 123.675],
+                        std=[1.0, 1.0, 1.0],
+                        to_rgb=False),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]))
 evaluation = dict(interval=1, metric='mAP')
 optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=None)
@@ -293,10 +300,10 @@ lr_config = dict(
     policy='step',
     warmup='linear',
     warmup_iters=500,
-    warmup_ratio=0.001,
-    step=[8, 11,14])
+    warmup_ratio=0.0001,
+    step=[8, 11])
 runner = dict(type='EpochBasedRunner', max_epochs=16)
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=2)
 log_config = dict(interval=50, hooks=[dict(type='TextLoggerHook')])
 custom_hooks = [dict(type='NumClassCheckHook')]
 dist_params = dict(backend='nccl')
@@ -313,25 +320,8 @@ albu_train_transforms = [
         scale_limit=0.0,
         rotate_limit=180,
         interpolation=1,
-        p=0.3),
-    # dict(
-    #     type='RandomBrightnessContrast',
-    #     brightness_limit=[0.1, 0.3],
-    #     contrast_limit=[0.1, 0.3],
-    #     p=0.2),
-    # dict(
-    #     type='RandomBrightnessContrast',
-    #     brightness_limit=[0.1, 0.3],
-    #     contrast_limit=[0.1, 0.3],
-    #     p=0.2),
-    # dict(type='ChannelShuffle', p=0.1),
-    # dict(
-    #     type='OneOf',
-    #     transforms=[
-    #         dict(type='Blur', blur_limit=3, p=1.0),
-    #         dict(type='MedianBlur', blur_limit=3, p=1.0)
-    #     ],
-    #     p=0.1)
+        p=0.5)
 ]
 auto_resume = False
 gpu_ids = [0]
+
